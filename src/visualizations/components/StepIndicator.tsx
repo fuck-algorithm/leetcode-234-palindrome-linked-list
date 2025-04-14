@@ -160,4 +160,4 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
   );
 };
 
-export default React.memo(StepIndicator); 
+export default StepIndicator; 

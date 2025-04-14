@@ -10,6 +10,7 @@ import { STORAGE_KEYS } from '../utils/constants';
 import LinkedListInput from './LinkedListInput';
 import AlgorithmExplanation from './AlgorithmExplanation';
 import PalindromeVisualization from '../visualizations/PalindromeVisualization';
+import StepProgressBar from './StepProgressBar';
 
 // 算法解法类型
 enum AlgorithmType {
@@ -400,6 +401,14 @@ const PalindromeLinkedListDemo: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
+      
+      {/* 占满整个屏幕宽度的进度条，使用相对定位的容器 */}
+      <div style={{ position: 'relative', overflow: 'hidden', width: '100%', margin: '5px 0' }}>
+        <StepProgressBar 
+          currentStep={currentStep} 
+          totalSteps={algorithmSteps.length} 
+        />
       </div>
       
       <div 

@@ -6,13 +6,33 @@ interface LinkedListInputProps {
   onListCreated: (list: LinkedList<number>) => void;
 }
 
+// 根据屏幕宽度计算最大节点数
+const calculateMaxNodes = (): number => {
+  const screenWidth = window.innerWidth;
+  // 假设每个节点(包含值和指针)大约占用120px宽度
+  const nodeWidth = 120;
+  const maxNodes = Math.max(4, Math.floor((screenWidth * 0.9) / nodeWidth));
+  return maxNodes;
+};
+
 const LinkedListInput: React.FC<LinkedListInputProps> = ({ onListCreated }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastHiding, setToastHiding] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>('');
+  const [maxNodes, setMaxNodes] = useState<number>(calculateMaxNodes());
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 监听窗口大小变化，更新最大节点数
+  useEffect(() => {
+    const handleResize = () => {
+      setMaxNodes(calculateMaxNodes());
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Toast notification function
   const showNotification = (message: string) => {
@@ -64,12 +84,22 @@ const LinkedListInput: React.FC<LinkedListInputProps> = ({ onListCreated }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
     setError(null);
+    
+    // 检查输入中的节点数量是否超过限制
+    const nodes = e.target.value
+      .split(',')
+      .map(val => val.trim())
+      .filter(val => val !== '');
+      
+    if (nodes.length > maxNodes) {
+      setError(`节点数量超过屏幕显示限制(${maxNodes})，可能会导致显示不完整`);
+    }
   };
 
   // 生成随机链表数据
   const generateRandomList = () => {
-    // 随机决定链表长度 (3-9)
-    const length = Math.floor(Math.random() * 7) + 3;
+    // 随机决定链表长度，但不超过最大节点数
+    const length = Math.min(Math.floor(Math.random() * 7) + 3, maxNodes);
     
     // 生成链表数据的模式: 1=回文, 2=几乎回文, 3=非回文
     // 平衡概率: 回文(40%), 几乎回文(30%), 非回文(30%)
@@ -208,6 +238,13 @@ const LinkedListInput: React.FC<LinkedListInputProps> = ({ onListCreated }) => {
         setError('请至少输入一个数字');
         return;
       }
+      
+      // 检查节点数量是否超过限制
+      if (values.length > maxNodes) {
+        if (!window.confirm(`节点数量(${values.length})超过屏幕显示限制(${maxNodes})，可能会导致显示不完整。是否继续？`)) {
+          return;
+        }
+      }
 
       // Create the linked list
       const linkedList = new LinkedList<number>(values);
@@ -241,11 +278,11 @@ const LinkedListInput: React.FC<LinkedListInputProps> = ({ onListCreated }) => {
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="输入用逗号分隔的数字（例如：1,2,2,1）"
+          placeholder={`输入用逗号分隔的数字，最多${maxNodes}个节点`}
           style={{
             padding: '8px 12px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
+            border: error ? '1px solid #e74c3c' : '1px solid #ddd',
             flex: 1,
           }}
         />

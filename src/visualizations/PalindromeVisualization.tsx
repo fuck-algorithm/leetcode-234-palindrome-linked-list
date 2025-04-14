@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { NodeData, NodeStatus, StepType } from '../utils/palindromeChecker';
 import PointerAnimation from './components/PointerAnimation';
 import PointerMovementPath from './components/PointerMovementPath';
+import StepIndicator from './components/StepIndicator';
 
 interface PalindromeVisualizationProps<T> {
   steps: {
@@ -69,27 +70,27 @@ const calculateLayoutParams = (width: number, height: number) => {
   const containerWidth = width * 0.95; // 使用95%的可用宽度
   const containerHeight = height * 0.90; // 使用90%的可用高度
   
-  // 动态计算每行最多显示的节点数 - 根据屏幕宽度自适应
-  const nodePerRow = Math.max(4, Math.min(8, Math.floor(containerWidth / 120)));
+  // 单个节点总宽度（节点值 + 指针 + 间距）
+  const singleNodeWidth = 180; // 增大估算值，避免节点重叠
   
-  // 动态计算节点大小 - 增大节点半径
-  const nodeRadius = Math.max(15, Math.min(22, Math.floor(containerWidth / (nodePerRow * 8))));
+  // 计算屏幕上最多能显示的节点数
+  const maxNodesInView = Math.max(4, Math.floor(containerWidth / singleNodeWidth));
   
-  // 动态计算节点间距 - 增加间距
-  const nodeSpacing = Math.max(80, Math.min(120, containerWidth / (nodePerRow + 1)));
+  // 动态计算节点大小 - 根据可用宽度调整
+  const nodeRadius = Math.max(20, Math.min(28, Math.floor(containerWidth / (maxNodesInView * 5))));
   
-  // 动态计算行间距 - 增加行间距
-  const rowSpacing = Math.max(60, Math.min(80, containerHeight / 6));
+  // 动态计算节点间距 - 使其均匀分布
+  const nodeSpacing = Math.max(130, Math.min(180, containerWidth / (maxNodesInView + 0.5)));
   
   return {
     NODE_RADIUS: nodeRadius,
     NODE_SPACING: nodeSpacing,
-    ROW_SPACING: rowSpacing,
-    NODES_PER_ROW: nodePerRow,
-    START_X: Math.max(20, containerWidth * 0.05), // 增加起始X位置
-    START_Y: Math.max(containerHeight * 0.25, 80), // 将起始Y位置设为容器高度的25%，确保不会太靠上
-    POINTER_WIDTH: nodeRadius * 1.8, // 加宽指针宽度
-    POINTER_HEIGHT: nodeRadius * 1.3 // 加高指针高度
+    ROW_SPACING: 0, // 不需要行间距，所有节点都在一行
+    NODES_PER_ROW: maxNodesInView, // 用于限制同时显示的节点数
+    START_X: Math.max(80, containerWidth * 0.1), // 增加左边距，避免节点太靠左
+    START_Y: containerHeight / 2, // 将节点放在容器中央
+    POINTER_WIDTH: nodeRadius * 2, // 调整指针宽度
+    POINTER_HEIGHT: nodeRadius * 1.4 // 调整指针高度
   };
 };
 
@@ -156,9 +157,12 @@ const NodeComponent = ({
         y={y}
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize={Math.max(14, nodeRadius * 0.8) + "px"}
+        fontSize={Math.max(16, nodeRadius * 0.9) + "px"}
         fill="#ffffff"
         fontWeight="bold"
+        style={{
+          textShadow: '0px 1px 2px rgba(0,0,0,0.3)'
+        }}
       >
         {String(value)}
       </text>
@@ -192,8 +196,9 @@ const NodeComponent = ({
         y={y}
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize={Math.max(12, nodeRadius * 0.6) + "px"}
+        fontSize={Math.max(14, nodeRadius * 0.7) + "px"}
         fill="#34495e"
+        fontWeight="bold"
       >
         next
       </text>
@@ -201,10 +206,11 @@ const NodeComponent = ({
       {/* 节点索引 */}
       <text
         x={valueX}
-        y={y + nodeRadius + 12}
+        y={y + nodeRadius + 15}
         textAnchor="middle"
-        fontSize={Math.max(12, nodeRadius * 0.6) + "px"}
-        fill="#777"
+        fontSize={Math.max(14, nodeRadius * 0.7) + "px"}
+        fill="#555"
+        fontWeight="bold"
       >
         #{index + 1}
       </text>
@@ -1004,13 +1010,13 @@ const PalindromeVisualization = <T extends unknown>({
     const positions: {[key: number]: {x: number; y: number}} = {};
     
     currentStepData.nodes.forEach((_, index) => {
-      const row = Math.floor(index / layoutParams.NODES_PER_ROW);
-      const col = index % layoutParams.NODES_PER_ROW;
+      // 单行布局，所有节点在同一行，确保充分的间距
+      const col = index;
       
-      // 更新节点位置计算，考虑新的节点布局
+      // 更新节点位置计算，所有节点在单行显示，增加水平间距
       positions[index] = {
-        x: layoutParams.START_X + col * layoutParams.NODE_SPACING + layoutParams.POINTER_WIDTH/2, // 调整X坐标，使value部分居中
-        y: layoutParams.START_Y + row * layoutParams.ROW_SPACING
+        x: layoutParams.START_X + col * (layoutParams.NODE_SPACING + layoutParams.NODE_RADIUS * 0.5),
+        y: layoutParams.START_Y // 所有节点都在同一行，垂直位置相同
       };
     });
     
@@ -1048,7 +1054,7 @@ const PalindromeVisualization = <T extends unknown>({
           isNull: true,
           sourceX: sourceX,
           sourceY: sourcePos.y,
-          targetX: sourceX + 30,
+          targetX: sourceX + 40, // 增加null指针长度
           targetY: sourcePos.y
         });
       } else {
@@ -1058,8 +1064,8 @@ const PalindromeVisualization = <T extends unknown>({
         if (targetIndex >= 0 && nodePositions[targetIndex]) {
           const targetPos = nodePositions[targetIndex];
           
-          // 指向target节点的值部分左侧
-          const targetX = targetPos.x - layoutParams.NODE_RADIUS;
+          // 指向target节点的值部分左侧，调整一下位置让连线更自然
+          const targetX = targetPos.x - layoutParams.NODE_RADIUS - 5;
           
           connections.push({
             source: i,
@@ -1297,310 +1303,227 @@ const PalindromeVisualization = <T extends unknown>({
   const innerHeight = height - margin.top - margin.bottom;
   
   return (
-    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-      <svg 
+    <div 
+      className="palindrome-visualization"
+      style={{ 
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',  // 允许内容溢出时滚动
+      }}
+    >
+      <svg
         ref={svgRef}
-        width="100%" 
-        height="100%" 
-        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-        preserveAspectRatio="xMidYMid meet"
+        width={Math.max(innerWidth, currentStepData ? currentStepData.nodes.length * layoutParams.NODE_SPACING + 400 : 0)}
+        height={innerHeight}
+        style={{
+          display: 'block',
+          overflow: 'visible', // 允许内容超出SVG边界
+        }}
+        preserveAspectRatio="xMinYMid meet" // 确保SVG从左侧开始绘制，并在Y轴上居中
       >
         <MarkerDefs />
         
-        <g transform={`translate(${margin.left}, ${margin.top})`}>
-          {/* 标题和描述 - 极简样式 */}
-          <g className="titles">
+        <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+          <feOffset dx="1" dy="1" result="offsetblur" />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.5" />
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        
+        {currentStepData && (
+          <g className="step-content">
+            <StepIndicator 
+              currentStep={currentStep}
+              totalSteps={steps.length}
+              currentStepType={currentStepData.type}
+              width={innerWidth}
+            />
+            
+            {/* 添加节点数量说明文本 */}
             <text
-              className="title"
               x={innerWidth / 2}
-              y={0}
+              y={25}
               textAnchor="middle"
               fontSize="14px"
-              fontWeight="bold"
+              fill="#666"
             >
-              {getStepTitle(currentStepData.type)}
+              共 {currentStepData.nodes.length} 个节点，可以滑动查看全部
             </text>
             
-            <text
-              className="description"
-              x={innerWidth / 2}
-              y={20}
-              textAnchor="middle"
-              fontSize="12px"
-              fill="#555"
-            >
-              {currentStepData.description}
-            </text>
-            
-            {/* 步骤指示器位置调整 */}
-            {currentStepData.type.includes('MIDDLE') && (
-              <g className="middle-finding-indicator">
-                <rect
-                  x={5}
-                  y={-20}
-                  width={160}
-                  height={20}
-                  rx={8}
-                  ry={8}
-                  fill="#3498db"
-                  opacity={0.9}
-                  filter="url(#dropShadow)"
-                />
+            {/* 其他内容 */}
+            <g transform={`translate(0, 60)`}>
+              {/* 标题和描述 - 极简样式 */}
+              <g className="titles">
                 <text
-                  x={85}
-                  y={-9}
+                  className="title"
+                  x={innerWidth / 2}
+                  y={0}
                   textAnchor="middle"
-                  fontSize="11px"
+                  fontSize="14px"
                   fontWeight="bold"
-                  fill="white"
                 >
-                  🔍 正在查找中间节点 🔍
+                  {getStepTitle(currentStepData.type)}
                 </text>
-              </g>
-            )}
-            
-            {currentStepData.type.includes('REVERSE') && (
-              <g className="reverse-indicator">
-                <rect
-                  x={5}
-                  y={-20}
-                  width={160}
-                  height={20}
-                  rx={8}
-                  ry={8}
-                  fill="#e67e22"
-                  opacity={0.9}
-                  filter="url(#dropShadow)"
-                />
+                
                 <text
-                  x={85}
-                  y={-9}
+                  className="description"
+                  x={innerWidth / 2}
+                  y={20}
                   textAnchor="middle"
-                  fontSize="11px"
-                  fontWeight="bold"
-                  fill="white"
+                  fontSize="12px"
+                  fill="#555"
                 >
-                  🔄 正在反转链表后半部分 🔄
+                  {currentStepData.description}
                 </text>
+                
+                {/* 步骤指示器位置调整 */}
+                {currentStepData.type.includes('MIDDLE') && (
+                  <g className="middle-finding-indicator">
+                    <rect
+                      x={5}
+                      y={-20}
+                      width={160}
+                      height={20}
+                      rx={8}
+                      ry={8}
+                      fill="#3498db"
+                      opacity={0.9}
+                      filter="url(#dropShadow)"
+                    />
+                    <text
+                      x={85}
+                      y={-9}
+                      textAnchor="middle"
+                      fontSize="11px"
+                      fontWeight="bold"
+                      fill="white"
+                    >
+                      🔍 正在查找中间节点 🔍
+                    </text>
+                  </g>
+                )}
+                
+                {currentStepData.type.includes('REVERSE') && (
+                  <g className="reverse-indicator">
+                    <rect
+                      x={5}
+                      y={-20}
+                      width={160}
+                      height={20}
+                      rx={8}
+                      ry={8}
+                      fill="#e67e22"
+                      opacity={0.9}
+                      filter="url(#dropShadow)"
+                    />
+                    <text
+                      x={85}
+                      y={-9}
+                      textAnchor="middle"
+                      fontSize="11px"
+                      fontWeight="bold"
+                      fill="white"
+                    >
+                      🔄 正在反转链表后半部分 🔄
+                    </text>
+                  </g>
+                )}
+                
+                {currentStepData.type.includes('COMPARE') && (
+                  <g className="compare-indicator">
+                    <rect
+                      x={5}
+                      y={-20}
+                      width={160}
+                      height={20}
+                      rx={8}
+                      ry={8}
+                      fill="#2ecc71"
+                      opacity={0.9}
+                      filter="url(#dropShadow)"
+                    />
+                    <text
+                      x={85}
+                      y={-9}
+                      textAnchor="middle"
+                      fontSize="11px"
+                      fontWeight="bold"
+                      fill="white"
+                    >
+                      🔍 正在比较前后两部分 🔍
+                    </text>
+                  </g>
+                )}
               </g>
-            )}
-            
-            {currentStepData.type.includes('COMPARE') && (
-              <g className="compare-indicator">
-                <rect
-                  x={5}
-                  y={-20}
-                  width={160}
-                  height={20}
-                  rx={8}
-                  ry={8}
-                  fill="#2ecc71"
-                  opacity={0.9}
-                  filter="url(#dropShadow)"
-                />
-                <text
-                  x={85}
-                  y={-9}
-                  textAnchor="middle"
-                  fontSize="11px"
-                  fontWeight="bold"
-                  fill="white"
-                >
-                  🔍 正在比较前后两部分 🔍
-                </text>
-              </g>
-            )}
-          </g>
-          
-          {/* 其他内容保持不变 */}
-          <g className="links">
-            {connections.map((conn, i) => (
-              <LinkComponent
-                key={`link-${i}`}
-                sourceX={conn.sourceX}
-                sourceY={conn.sourceY}
-                targetX={conn.targetX}
-                targetY={conn.targetY}
-                isReverse={conn.isReverse}
-                isNull={conn.isNull}
-              />
-            ))}
-          </g>
-          
-          <g className="nodes">
-            {currentStepData.nodes.map((node, i) => {
-              const pos = nodePositions[i];
-              return pos ? (
-                <NodeComponent
-                  key={`node-${i}`}
-                  x={pos.x}
-                  y={pos.y}
-                  value={node.value}
-                  index={i}
-                  status={node.status || []}
-                  isFocus={i === focusData.focusIndex}
-                  nodeRadius={layoutParams.NODE_RADIUS}
-                  pointerWidth={layoutParams.POINTER_WIDTH}
-                  pointerHeight={layoutParams.POINTER_HEIGHT}
-                />
-              ) : null;
-            })}
-          </g>
-          
-          {/* 强制显示中间节点标识 - 显示在第3个节点上(索引2) */}
-          {FORCE_SHOW_MIDDLE_NODE && currentStepData && nodePositions && 
-            nodePositions[2] && currentStepData.type.includes('REVERSE') && (
-            <g className="middle-node-indicator" filter="url(#dropShadow)">
-              {/* 大大的箭头标识 */}
-              <path 
-                d={`M${nodePositions[2].x},${nodePositions[2].y - layoutParams.NODE_RADIUS - 30} 
-                   L${nodePositions[2].x - 25},${nodePositions[2].y - layoutParams.NODE_RADIUS - 70}
-                   L${nodePositions[2].x + 25},${nodePositions[2].y - layoutParams.NODE_RADIUS - 70}
-                   Z`} 
-                fill="#ff0000"
-                stroke="#aa0000"
-                strokeWidth={3}
-                opacity={0.9}
-              >
-                <animate 
-                  attributeName="opacity" 
-                  values="1;0.6;1" 
-                  dur="1s" 
-                  repeatCount="indefinite" 
-                />
-              </path>
               
-              {/* 明确的中间节点标签 */}
-              <rect
-                x={nodePositions[2].x - 60}
-                y={nodePositions[2].y - layoutParams.NODE_RADIUS - 100}
-                width={120}
-                height={25}
-                rx={12.5}
-                ry={12.5}
-                fill="#ff0000"
-                opacity={0.9}
-              />
-              <text
-                x={nodePositions[2].x}
-                y={nodePositions[2].y - layoutParams.NODE_RADIUS - 85}
-                textAnchor="middle"
-                fontSize="16px"
-                fontWeight="bold"
-                fill="white"
-              >
-                中间节点
-              </text>
-            </g>
-          )}
-          
-          {/* 保留原来的中间节点标识逻辑 */}
-          {currentStepData && nodePositions && 
-           (currentStepData.type.includes('REVERSE') || currentStepData.type.includes('COMPARE')) && 
-           middleNodeIndex >= 0 && nodePositions[middleNodeIndex] && (
-            <g className="middle-node-indicator" filter="url(#dropShadow)">
-              {/* 大箭头指向中间节点 */}
-              <path 
-                d={`M${nodePositions[middleNodeIndex].x},${nodePositions[middleNodeIndex].y - layoutParams.NODE_RADIUS - 30} 
-                   L${nodePositions[middleNodeIndex].x - 25},${nodePositions[middleNodeIndex].y - layoutParams.NODE_RADIUS - 70}
-                   L${nodePositions[middleNodeIndex].x + 25},${nodePositions[middleNodeIndex].y - layoutParams.NODE_RADIUS - 70}
-                   Z`} 
-                fill="#e74c3c"
-                stroke="#c0392b"
-                strokeWidth={2.5}
-                opacity={0.9}
-              >
-                <animate 
-                  attributeName="opacity" 
-                  values="0.9;0.7;0.9" 
-                  dur="1.5s" 
-                  repeatCount="indefinite" 
-                />
-              </path>
+              {/* 链接、节点等其他内容 */}
+              <g className="links">
+                {connections.map((conn, i) => (
+                  <LinkComponent
+                    key={`link-${i}`}
+                    sourceX={conn.sourceX}
+                    sourceY={conn.sourceY}
+                    targetX={conn.targetX}
+                    targetY={conn.targetY}
+                    isReverse={conn.isReverse}
+                    isNull={conn.isNull}
+                  />
+                ))}
+              </g>
               
-              {/* 中间节点标签 */}
-              <rect
-                x={nodePositions[middleNodeIndex].x - 50}
-                y={nodePositions[middleNodeIndex].y - layoutParams.NODE_RADIUS - 100}
-                width={100}
-                height={25}
-                rx={12.5}
-                ry={12.5}
-                fill="#e74c3c"
-                opacity={0.9}
-              />
-              <text
-                x={nodePositions[middleNodeIndex].x}
-                y={nodePositions[middleNodeIndex].y - layoutParams.NODE_RADIUS - 85}
-                textAnchor="middle"
-                fontSize="14px"
-                fontWeight="bold"
-                fill="white"
-              >
-                中间节点
-              </text>
+              <g className="nodes">
+                {currentStepData.nodes.map((node, i) => {
+                  const pos = nodePositions[i];
+                  return pos ? (
+                    <NodeComponent
+                      key={`node-${i}`}
+                      x={pos.x}
+                      y={pos.y}
+                      value={node.value}
+                      index={i}
+                      status={node.status || []}
+                      isFocus={i === focusData.focusIndex}
+                      nodeRadius={layoutParams.NODE_RADIUS}
+                      pointerWidth={layoutParams.POINTER_WIDTH}
+                      pointerHeight={layoutParams.POINTER_HEIGHT}
+                    />
+                  ) : null;
+                })}
+              </g>
+              
+              {/* 指示器和其他组件 */}
+              {nodePositions && (
+                <IndicatorComponent
+                  targetX={focusData.focusIndex >= 0 ? nodePositions[focusData.focusIndex]?.x : innerWidth/2}
+                  targetY={focusData.focusIndex >= 0 ? nodePositions[focusData.focusIndex]?.y : innerHeight/2}
+                  focusType={focusData.focusType}
+                  slowIndex={focusData.slowIndex}
+                  fastIndex={focusData.fastIndex}
+                  leftIndex={focusData.leftIndex}
+                  rightIndex={focusData.rightIndex}
+                  prevIndex={focusData.prevIndex}
+                  currentIndex={focusData.currentIndex}
+                  nextIndex={focusData.nextIndex}
+                  nodes={currentStepData.nodes}
+                  nodePositions={nodePositions}
+                  previousSlowIndex={previousStepData.slowIndex}
+                  previousFastIndex={previousStepData.fastIndex}
+                  layoutParams={layoutParams}
+                  currentStepData={currentStepData}
+                />
+              )}
+              
+              {/* 图例 - 移至左下角 */}
+              <LegendComponent x={10} y={innerHeight - 40} layoutParams={layoutParams} />
             </g>
-          )}
-          
-          {nodePositions && (
-            <IndicatorComponent
-              targetX={focusData.focusIndex >= 0 ? nodePositions[focusData.focusIndex]?.x : innerWidth/2}
-              targetY={focusData.focusIndex >= 0 ? nodePositions[focusData.focusIndex]?.y : innerHeight/2}
-              focusType={focusData.focusType}
-              slowIndex={focusData.slowIndex}
-              fastIndex={focusData.fastIndex}
-              leftIndex={focusData.leftIndex}
-              rightIndex={focusData.rightIndex}
-              prevIndex={focusData.prevIndex}
-              currentIndex={focusData.currentIndex}
-              nextIndex={focusData.nextIndex}
-              nodes={currentStepData.nodes}
-              nodePositions={nodePositions}
-              previousSlowIndex={previousStepData.slowIndex}
-              previousFastIndex={previousStepData.fastIndex}
-              layoutParams={layoutParams}
-              currentStepData={currentStepData}
-            />
-          )}
-          
-          {/* 图例 - 移至左下角 */}
-          <LegendComponent x={10} y={innerHeight - 40} layoutParams={layoutParams} />
-          
-          {/* 缩小提示信息框 */}
-          {currentStepData.type.includes('MIDDLE') && (focusData.slowIndex === undefined || focusData.fastIndex === undefined) && (
-            <g className="pointer-message">
-              <rect
-                x={innerWidth - 180}
-                y={innerHeight - 45}
-                width={170}
-                height={35}
-                rx={4}
-                ry={4}
-                fill="#f39c12"
-                opacity={0.9}
-              />
-              <text
-                x={innerWidth - 95}
-                y={innerHeight - 30}
-                textAnchor="middle"
-                fontSize="10px"
-                fontWeight="bold"
-                fill="white"
-              >
-                提示：请使用步骤控制按钮
-              </text>
-              <text
-                x={innerWidth - 95}
-                y={innerHeight - 15}
-                textAnchor="middle"
-                fontSize="8px"
-                fill="white"
-              >
-                切换到查找中间节点的步骤
-              </text>
-            </g>
-          )}
-        </g>
+          </g>
+        )}
       </svg>
     </div>
   );

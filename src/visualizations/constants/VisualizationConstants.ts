@@ -51,11 +51,11 @@ export const STATUS_LABELS = {
 /**
  * 定义节点布局参数
  */
-export const NODE_RADIUS = 20;
-export const NODE_SPACING = 120;
+export const NODE_RADIUS = 30;
+export const NODE_SPACING = 220;
 export const ROW_SPACING = 90;
-export const NODES_PER_ROW = 5;
-export const START_X = 60;
-export const START_Y = 60;
-export const POINTER_WIDTH = 40;
-export const POINTER_HEIGHT = 30; 
+export const START_X = 150;
+export const START_Y = 180;
+export const NODES_PER_ROW = Number.MAX_SAFE_INTEGER;
+export const POINTER_WIDTH = 60;
+export const POINTER_HEIGHT = 40; 
