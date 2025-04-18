@@ -1,153 +1,355 @@
-import React, { useState } from 'react';
-import { useAlgorithm } from '../context/AlgorithmContext';
-import { createLinkedList, isPalindrome } from '../utils/linkedListUtils';
-import './LinkedListInput.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { LinkedList } from '../models/LinkedList';
+import { STORAGE_KEYS } from '../utils/constants';
 
-// 预设链表数据选项
-const presetOptions = [
-  { label: '回文示例: 1→2→2→1', value: [1, 2, 2, 1] },
-  { label: '回文示例: 1→2→3→2→1', value: [1, 2, 3, 2, 1] },
-  { label: '非回文示例: 1→2→3→4', value: [1, 2, 3, 4] },
-  { label: '单节点: 5', value: [5] },
-  { label: '空链表', value: [] }
-];
+interface LinkedListInputProps {
+  onListCreated: (list: LinkedList<number>) => void;
+}
 
-const LinkedListInput: React.FC = () => {
-  const { dispatch } = useAlgorithm();
-  const [inputValue, setInputValue] = useState('1,2,2,1');
-  const [error, setError] = useState('');
+// 根据屏幕宽度计算最大节点数
+const calculateMaxNodes = (): number => {
+  const screenWidth = window.innerWidth;
+  // 假设每个节点(包含值和指针)大约占用120px宽度
+  const nodeWidth = 120;
+  const maxNodes = Math.max(4, Math.floor((screenWidth * 0.9) / nodeWidth));
+  return maxNodes;
+};
 
-  // 处理输入变化
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    setError('');
+const LinkedListInput: React.FC<LinkedListInputProps> = ({ onListCreated }) => {
+  const [inputValue, setInputValue] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState<boolean>(false);
+  const [toastHiding, setToastHiding] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>('');
+  const [maxNodes, setMaxNodes] = useState<number>(calculateMaxNodes());
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 监听窗口大小变化，更新最大节点数
+  useEffect(() => {
+    const handleResize = () => {
+      setMaxNodes(calculateMaxNodes());
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Toast notification function
+  const showNotification = (message: string) => {
+    // If a toast is already showing, clear its timeout
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+      setToastHiding(false);
+    }
+    
+    setToastMessage(message);
+    setShowToast(true);
+    
+    // Auto-hide after 3 seconds
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastHiding(true);
+      
+      // Wait for animation to complete before hiding
+      setTimeout(() => {
+        setShowToast(false);
+        setToastHiding(false);
+      }, 500);
+    }, 3000);
   };
 
-  // 处理预设选择
-  const handlePresetSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedIndex = parseInt(e.target.value);
-    if (selectedIndex >= 0 && selectedIndex < presetOptions.length) {
-      setInputValue(presetOptions[selectedIndex].value.join(','));
-      setError('');
+  // Clear timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 在组件挂载时从 localStorage 加载保存的链表值
+  useEffect(() => {
+    const savedListValues = localStorage.getItem(STORAGE_KEYS.LINKED_LIST);
+    if (savedListValues) {
+      try {
+        const values = JSON.parse(savedListValues);
+        if (Array.isArray(values) && values.length > 0) {
+          setInputValue(values.join(','));
+        }
+      } catch (e) {
+        console.error('Failed to parse saved linked list:', e);
+      }
+    }
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    setError(null);
+    
+    // 检查输入中的节点数量是否超过限制
+    const nodes = e.target.value
+      .split(',')
+      .map(val => val.trim())
+      .filter(val => val !== '');
+      
+    if (nodes.length > maxNodes) {
+      setError(`节点数量超过屏幕显示限制(${maxNodes})，可能会导致显示不完整`);
     }
   };
 
-  // 创建链表
+  // 生成随机链表数据
+  const generateRandomList = () => {
+    // 随机决定链表长度，但不超过最大节点数
+    const length = Math.min(Math.floor(Math.random() * 7) + 3, maxNodes);
+    
+    // 生成链表数据的模式: 1=回文, 2=几乎回文, 3=非回文
+    // 平衡概率: 回文(40%), 几乎回文(30%), 非回文(30%)
+    const patternRoll = Math.random();
+    let pattern: number;
+    let patternName: string;
+    
+    if (patternRoll < 0.4) {
+      pattern = 1; // 回文
+      patternName = "回文链表";
+    } else if (patternRoll < 0.7) {
+      pattern = 2; // 几乎回文
+      patternName = "几乎回文链表";
+    } else {
+      pattern = 3; // 非回文
+      patternName = "非回文链表";
+    }
+    
+    let values: number[] = [];
+    
+    if (pattern === 1) {
+      // 生成回文链表
+      const halfLength = Math.floor(length / 2);
+      const firstHalf: number[] = [];
+      
+      // 生成前半部分 (1-9之间的随机数)
+      for (let i = 0; i < halfLength; i++) {
+        firstHalf.push(Math.floor(Math.random() * 9) + 1);
+      }
+      
+      // 构建回文链表
+      values = [...firstHalf];
+      
+      // 如果长度是奇数，添加中间元素
+      if (length % 2 !== 0) {
+        values.push(Math.floor(Math.random() * 9) + 1);
+      }
+      
+      // 添加镜像部分
+      for (let i = firstHalf.length - 1; i >= 0; i--) {
+        values.push(firstHalf[i]);
+      }
+    } else if (pattern === 2) {
+      // 生成几乎回文的链表 (只有一个位置不同)
+      const halfLength = Math.floor(length / 2);
+      const firstHalf: number[] = [];
+      
+      // 生成前半部分
+      for (let i = 0; i < halfLength; i++) {
+        firstHalf.push(Math.floor(Math.random() * 9) + 1);
+      }
+      
+      // 构建基本回文
+      values = [...firstHalf];
+      
+      // 如果长度是奇数，添加中间元素
+      if (length % 2 !== 0) {
+        values.push(Math.floor(Math.random() * 9) + 1);
+      }
+      
+      // 添加镜像部分
+      for (let i = firstHalf.length - 1; i >= 0; i--) {
+        values.push(firstHalf[i]);
+      }
+      
+      // 修改一个随机位置的值，使其不再是回文
+      const changeIndex = Math.floor(Math.random() * values.length);
+      let newValue;
+      do {
+        newValue = Math.floor(Math.random() * 9) + 1;
+      } while(newValue === values[changeIndex]);
+      
+      values[changeIndex] = newValue;
+    } else {
+      // 生成非回文链表
+      for (let i = 0; i < length; i++) {
+        values.push(Math.floor(Math.random() * 9) + 1);
+      }
+      
+      // 确保不是回文
+      let isPalindrome = true;
+      while (isPalindrome) {
+        isPalindrome = true;
+        for (let i = 0; i < Math.floor(values.length / 2); i++) {
+          if (values[i] !== values[values.length - 1 - i]) {
+            isPalindrome = false;
+            break;
+          }
+        }
+        
+        if (isPalindrome) {
+          // 如果仍然是回文，修改最后一个元素
+          const lastIndex = values.length - 1;
+          let newValue;
+          do {
+            newValue = Math.floor(Math.random() * 9) + 1;
+          } while(newValue === values[lastIndex]);
+          
+          values[lastIndex] = newValue;
+        }
+      }
+    }
+    
+    // 更新输入值
+    setInputValue(values.join(','));
+    
+    // 创建链表
+    const linkedList = new LinkedList<number>(values);
+    
+    // 保存到 localStorage
+    localStorage.setItem(STORAGE_KEYS.LINKED_LIST, JSON.stringify(values));
+    
+    // 显示通知
+    showNotification(`已生成${values.length}个节点的${patternName}`);
+    
+    // 通知父组件
+    onListCreated(linkedList);
+  };
+
   const handleCreateList = () => {
     try {
-      // 解析输入值
-      let values: number[] = [];
-      if (inputValue.trim()) {
-        values = inputValue.split(',').map(val => {
-          const num = Number(val.trim());
+      // Parse the input as a comma-separated list of numbers
+      const values = inputValue
+        .split(',')
+        .map((val) => val.trim())
+        .filter((val) => val !== '')
+        .map((val) => {
+          const num = Number(val);
           if (isNaN(num)) {
-            throw new Error(`无效的数字: "${val.trim()}"`);
+            throw new Error(`"${val}" 不是一个有效的数字`);
           }
           return num;
         });
+
+      if (values.length === 0) {
+        setError('请至少输入一个数字');
+        return;
+      }
+      
+      // 检查节点数量是否超过限制
+      if (values.length > maxNodes) {
+        if (!window.confirm(`节点数量(${values.length})超过屏幕显示限制(${maxNodes})，可能会导致显示不完整。是否继续？`)) {
+          return;
+        }
       }
 
-      // 创建链表
-      const list = createLinkedList(values);
+      // Create the linked list
+      const linkedList = new LinkedList<number>(values);
       
-      // 预计算是否为回文
-      const result = isPalindrome(list);
+      // 保存到 localStorage
+      localStorage.setItem(STORAGE_KEYS.LINKED_LIST, JSON.stringify(values));
       
-      // 更新状态
-      dispatch({ type: 'SET_LIST', payload: list });
-      dispatch({ 
-        type: 'UPDATE_RESULT', 
-        payload: { 
-          isPalindrome: result,
-          comparisons: [] // 初始化为空数组，会在比较阶段填充
-        } 
-      });
-      
-      setError('');
+      onListCreated(linkedList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '输入格式错误');
+      setError((err as Error).message);
     }
   };
 
-  // 随机生成链表
-  const generateRandomList = (palindrome: boolean) => {
-    const length = Math.floor(Math.random() * 5) + 2; // 2-6个节点
-    const values: number[] = [];
-    
-    // 生成随机值
-    for (let i = 0; i < Math.ceil(length / 2); i++) {
-      values.push(Math.floor(Math.random() * 9) + 1); // 1-9的随机数
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleCreateList();
     }
-    
-    // 如果要生成回文链表，镜像复制前半部分
-    if (palindrome) {
-      // 奇数长度需要跳过中间元素
-      const isOdd = length % 2 !== 0;
-      const mirrorStart = isOdd ? Math.ceil(length / 2) - 2 : Math.ceil(length / 2) - 1;
-      
-      for (let i = mirrorStart; i >= 0; i--) {
-        values.push(values[i]);
-      }
-    } else {
-      // 非回文链表，确保最后一个元素与对应位置不同
-      for (let i = Math.ceil(length / 2) - 2; i >= 0; i--) {
-        const val = values[i];
-        const newVal = (val % 9) + 1; // 确保不同的值
-        values.push(newVal);
-      }
-      
-      // 最后添加一个不同的值，确保不是回文
-      values.push((values[0] % 9) + 1);
-    }
-    
-    setInputValue(values.join(','));
   };
+
+  const examples = [
+    [1, 2, 2, 1],
+    [1, 2, 3, 2, 1],
+    [1, 2, 3, 4, 5],
+  ];
 
   return (
-    <div className="linked-list-input">
-      <h3>链表配置</h3>
-      
-      <div className="input-group">
-        <label htmlFor="list-input">输入链表值（逗号分隔）:</label>
-        <div className="input-row">
-          <input
-            id="list-input"
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder="例如: 1,2,2,1"
-          />
-          <button onClick={handleCreateList} className="create-button">
-            创建
-          </button>
-        </div>
-        {error && <div className="error-message">{error}</div>}
-      </div>
-      
-      <div className="presets">
-        <label htmlFor="preset-select">选择预设:</label>
-        <select 
-          id="preset-select" 
-          onChange={handlePresetSelect}
-          defaultValue="-1"
+    <div className="linked-list-input" style={{ margin: '20px 0', position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder={`输入用逗号分隔的数字，最多${maxNodes}个节点`}
+          style={{
+            padding: '8px 12px',
+            borderRadius: '4px',
+            border: error ? '1px solid #e74c3c' : '1px solid #ddd',
+            flex: 1,
+          }}
+        />
+        <button
+          onClick={generateRandomList}
+          title="生成随机链表数据"
+          className="dice-button"
         >
-          <option value="-1" disabled>选择预设链表...</option>
-          {presetOptions.map((option, index) => (
-            <option key={index} value={index}>
-              {option.label}
-            </option>
+          <span className="dice-icon">🎲</span>
+        </button>
+        <button
+          onClick={handleCreateList}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#3498db',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          创建链表
+        </button>
+      </div>
+
+      {error && (
+        <div
+          style={{
+            color: '#e74c3c',
+            marginTop: '10px',
+            fontSize: '14px',
+          }}
+        >
+          错误: {error}
+        </div>
+      )}
+
+      <div style={{ marginTop: '15px' }}>
+        <div style={{ fontSize: '14px', color: '#7f8c8d', marginBottom: '8px' }}>
+          示例:
+        </div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {examples.map((example, index) => (
+            <button
+              key={index}
+              onClick={() => setInputValue(example.join(','))}
+              style={{
+                padding: '6px 12px',
+                backgroundColor: '#f1f1f1',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              {example.join(', ')}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
-      
-      <div className="random-buttons">
-        <button onClick={() => generateRandomList(true)} className="random-button palindrome">
-          生成随机回文链表
-        </button>
-        <button onClick={() => generateRandomList(false)} className="random-button non-palindrome">
-          生成随机非回文链表
-        </button>
-      </div>
+
+      {/* Toast notification */}
+      {showToast && (
+        <div className={`toast-notification ${toastHiding ? 'hiding' : ''}`}>
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 };
