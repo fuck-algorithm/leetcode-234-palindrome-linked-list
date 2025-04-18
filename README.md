@@ -73,3 +73,7 @@ npm run build
 ## 许可证
 
 MIT
+
+## 解决GitHub Actions部署问题
+
+修复了GitHub Actions权限问题，现在可以成功部署到GitHub Pages。
