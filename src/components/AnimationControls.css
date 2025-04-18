@@ -1,0 +1,124 @@
+.animation-controls {
+  width: 100%;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.controls-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.playback-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.control-button span {
+  font-size: 18px;
+}
+
+.play {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.play:hover {
+  background-color: #45a049;
+}
+
+.pause {
+  background-color: #FFA000;
+  color: white;
+}
+
+.pause:hover {
+  background-color: #FF8F00;
+}
+
+.reset {
+  background-color: #F44336;
+  color: white;
+}
+
+.reset:hover {
+  background-color: #E53935;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.speed-control label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.speed-control input[type="range"] {
+  width: 100px;
+}
+
+.step-description {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: white;
+  border-radius: 4px;
+  border-left: 4px solid #2196F3;
+}
+
+.step-description h3 {
+  margin: 0 0 5px 0;
+  color: #2196F3;
+}
+
+.step-description p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.step-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 15px;
+}
+
+.step-button {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.step-button:hover {
+  background-color: #eee;
+}
+
+.step-button.active {
+  background-color: #2196F3;
+  color: white;
+  border-color: #2196F3;
+} 
