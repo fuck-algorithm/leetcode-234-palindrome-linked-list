@@ -1,0 +1,114 @@
+.linked-list-input {
+  width: 100%;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.linked-list-input h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.create-button {
+  padding: 8px 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.create-button:hover {
+  background-color: #1976D2;
+}
+
+.error-message {
+  color: #F44336;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.presets {
+  margin-bottom: 15px;
+}
+
+.presets label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.presets select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.random-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.random-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  font-size: 13px;
+}
+
+.random-button.palindrome {
+  background-color: #8BC34A;
+  color: white;
+}
+
+.random-button.palindrome:hover {
+  background-color: #7CB342;
+}
+
+.random-button.non-palindrome {
+  background-color: #FF9800;
+  color: white;
+}
+
+.random-button.non-palindrome:hover {
+  background-color: #FB8C00;
+} 
