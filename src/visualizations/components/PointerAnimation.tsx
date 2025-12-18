@@ -23,8 +23,8 @@ const PointerAnimation: React.FC<PointerAnimationProps> = ({
   nodeRadius,
   isAnimating = false
 }) => {
-  const color = pointerType === 'slow' ? '#16a085' : '#c0392b';
-  const arrowColor = pointerType === 'slow' ? '#27ae60' : '#e74c3c';
+  const color = pointerType === 'slow' ? '#00d4aa' : '#ff6b6b';
+  const arrowColor = pointerType === 'slow' ? '#10b981' : '#ef4444';
   
   // 确保指针位置存在
   if (!nodePositions[currentNodeIndices[0]]) {

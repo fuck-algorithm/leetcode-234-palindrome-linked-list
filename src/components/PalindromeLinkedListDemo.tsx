@@ -13,6 +13,7 @@ import StepProgressBar from './StepProgressBar';
 import Header from './Header';
 import CodeDisplay from './CodeDisplay';
 import AlgorithmInfoPanel from './AlgorithmInfoPanel';
+import WechatFloatButton from './WechatFloatButton';
 
 // 算法解法类型
 enum AlgorithmType {
@@ -336,134 +337,132 @@ const PalindromeLinkedListDemo: React.FC = () => {
   const visualizationHeight = Math.max(containerSize.height * 0.6, 300);
 
   return (
-    <div className="palindrome-demo" style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="palindrome-demo" style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#1a1d23' }}>
       <Header />
       
-      <div className="controls" style={{ padding: '0 10px', flexShrink: 0 }}>
+      {/* 紧凑的控制栏 */}
+      <div className="controls" style={{ padding: '6px 0', flexShrink: 0, borderBottom: '1px solid #2d3139' }}>
         <div style={{ 
           display: 'flex', 
           flexWrap: 'wrap', 
-          gap: '10px', 
+          gap: '8px', 
           alignItems: 'center',
-          marginTop: '10px',
-          marginBottom: '10px'
+          justifyContent: 'space-between'
         }}>
-          <LinkedListInput onListCreated={handleListCreated} />
-          
-          <div style={{ display: 'flex', gap: '5px' }}>
-            <button
-              onClick={() => handleAlgorithmChange(AlgorithmType.TWO_POINTERS)}
-              style={{
-                padding: '6px 10px',
-                backgroundColor: algorithmType === AlgorithmType.TWO_POINTERS ? '#3498db' : '#ecf0f1',
-                color: algorithmType === AlgorithmType.TWO_POINTERS ? 'white' : '#333',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              快慢指针法
-            </button>
-            <button
-              onClick={() => handleAlgorithmChange(AlgorithmType.ARRAY_COPY)}
-              style={{
-                padding: '6px 10px',
-                backgroundColor: algorithmType === AlgorithmType.ARRAY_COPY ? '#3498db' : '#ecf0f1',
-                color: algorithmType === AlgorithmType.ARRAY_COPY ? 'white' : '#333',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              数组复制法
-            </button>
-          </div>
-        </div>
-        
-        <div style={{ 
-          display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: '10px', 
-          alignItems: 'center',
-          marginBottom: '10px'
-        }}>
-          <div style={{ display: 'flex', gap: '5px' }}>
-            <button onClick={handlePrevious} title="快捷键: ←">
-              ← 上一步 (←)
-            </button>
-            <button onClick={handleNext} title="快捷键: →">
-              下一步 (→) →
-            </button>
-            <button onClick={handleAutoPlay} title="快捷键: 空格">
-              {isAutoPlaying ? '⏸ 暂停' : '▶ 播放'} (空格)
-            </button>
-            <button onClick={handleReset}>⟲ 重置</button>
-            <button onClick={handleSkipToEnd}>跳到结尾 ⏭</button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <LinkedListInput onListCreated={handleListCreated} />
+            
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <button
+                onClick={() => handleAlgorithmChange(AlgorithmType.TWO_POINTERS)}
+                style={{
+                  padding: '5px 10px',
+                  backgroundColor: algorithmType === AlgorithmType.TWO_POINTERS ? '#00d4aa' : '#2d3139',
+                  color: algorithmType === AlgorithmType.TWO_POINTERS ? '#1a1d23' : '#a0a0a0',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: 600
+                }}
+              >
+                快慢指针法
+              </button>
+              <button
+                onClick={() => handleAlgorithmChange(AlgorithmType.ARRAY_COPY)}
+                style={{
+                  padding: '5px 10px',
+                  backgroundColor: algorithmType === AlgorithmType.ARRAY_COPY ? '#00d4aa' : '#2d3139',
+                  color: algorithmType === AlgorithmType.ARRAY_COPY ? '#1a1d23' : '#a0a0a0',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  fontWeight: 600
+                }}
+              >
+                数组复制法
+              </button>
+            </div>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <label htmlFor="speed">速度:</label>
-            <input
-              id="speed"
-              type="range"
-              min="500"
-              max="3000"
-              step="100"
-              value={animationSpeed}
-              onChange={handleSpeedChange}
-              style={{ maxWidth: '100px' }}
-            />
-          </div>
-          
-          <div>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <button onClick={handlePrevious} title="快捷键: ←" style={{ backgroundColor: '#3b82f6', color: 'white', padding: '5px 10px', fontSize: '12px' }}>
+                ← 上一步
+              </button>
+              <button onClick={handleNext} title="快捷键: →" style={{ backgroundColor: '#3b82f6', color: 'white', padding: '5px 10px', fontSize: '12px' }}>
+                下一步 →
+              </button>
+              <button onClick={handleAutoPlay} title="快捷键: 空格" style={{ backgroundColor: isAutoPlaying ? '#f59e0b' : '#10b981', color: 'white', padding: '5px 10px', fontSize: '12px' }}>
+                {isAutoPlaying ? '⏸ 暂停' : '▶ 播放'}
+              </button>
+              <button onClick={handleReset} style={{ backgroundColor: '#ef4444', color: 'white', padding: '5px 10px', fontSize: '12px' }}>⟲ 重置</button>
+              <button onClick={handleSkipToEnd} style={{ backgroundColor: '#8b5cf6', color: 'white', padding: '5px 10px', fontSize: '12px' }}>⏭ 结尾</button>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#a0a0a0', fontSize: '12px' }}>
+              <label htmlFor="speed">速度:</label>
+              <input
+                id="speed"
+                type="range"
+                min="500"
+                max="3000"
+                step="100"
+                value={animationSpeed}
+                onChange={handleSpeedChange}
+                style={{ width: '80px', accentColor: '#00d4aa' }}
+              />
+            </div>
+            
             <button onClick={toggleHints} style={{ 
-              padding: '4px 8px',
-              fontSize: '0.9rem'
+              padding: '5px 8px',
+              fontSize: '12px',
+              backgroundColor: showHints ? '#6366f1' : '#2d3139',
+              color: showHints ? 'white' : '#a0a0a0'
             }}>
               {showHints ? '隐藏提示' : '显示提示'}
             </button>
+            
+            {/* 结果标签 */}
+            <div 
+              style={{ 
+                padding: '4px 12px', 
+                backgroundColor: isPalindrome ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                color: isPalindrome ? '#10b981' : '#f59e0b',
+                borderRadius: '4px',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                border: `1px solid ${isPalindrome ? '#10b981' : '#f59e0b'}`
+              }}
+            >
+              {isPalindrome ? '✓ 回文' : '✗ 非回文'}
+            </div>
           </div>
         </div>
       </div>
       
-      {/* 占满整个屏幕宽度的进度条，使用相对定位的容器 */}
-      <div style={{ position: 'relative', overflow: 'hidden', width: '100%', margin: '5px 0' }}>
+      {/* 进度条 */}
+      <div style={{ width: '100%', flexShrink: 0 }}>
         <StepProgressBar 
           currentStep={currentStep} 
           totalSteps={algorithmSteps.length} 
         />
       </div>
       
-      <div 
-        className="result-label" 
-        style={{ 
-          padding: '5px 10px', 
-          backgroundColor: isPalindrome ? '#e8f8f5' : '#fdebd0',
-          color: isPalindrome ? '#27ae60' : '#e67e22',
-          borderRadius: '4px',
-          margin: '0 10px 10px',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          flexShrink: 0
-        }}
-      >
-        结果: {isPalindrome ? '是回文链表 ✓' : '不是回文链表 ✗'}
-      </div>
-      
       {showHints && currentHint && (
         <div 
           className="hint-box" 
           style={{ 
-            padding: '5px 10px', 
-            backgroundColor: '#f8f9fa',
-            border: '1px solid #e9ecef',
-            borderRadius: '4px',
-            margin: '0 10px 10px',
-            fontSize: '0.9rem',
+            padding: '4px 8px', 
+            backgroundColor: '#2d3139',
+            border: '1px solid #3d4149',
+            color: '#a0a0a0',
+            fontSize: '12px',
             flexShrink: 0
           }}
         >
-          {currentHint}
+          💡 {currentHint}
         </div>
       )}
       
@@ -476,17 +475,17 @@ const PalindromeLinkedListDemo: React.FC = () => {
           minHeight: 0,
           overflow: 'hidden',
           display: 'flex',
-          gap: '10px',
-          padding: '0 10px 10px'
+          gap: '0'
         }}
       >
         {/* 左侧信息面板 */}
         <div 
           className="info-panel-container"
           style={{
-            width: '220px',
+            width: '180px',
             flexShrink: 0,
-            overflow: 'hidden'
+            overflow: 'auto',
+            borderRight: '1px solid #2d3139'
           }}
         >
           <AlgorithmInfoPanel
@@ -501,13 +500,15 @@ const PalindromeLinkedListDemo: React.FC = () => {
           />
         </div>
         
-        {/* 中间可视化区域 */}
+        {/* 中间可视化区域 - 占用最大空间 */}
         <div 
           className="visualization-container"
           style={{
             flex: 1,
             minWidth: 0,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            backgroundColor: '#0f1419',
+            background: 'linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0d1117 100%)'
           }}
         >
           <PalindromeVisualization
@@ -518,13 +519,14 @@ const PalindromeLinkedListDemo: React.FC = () => {
           />
         </div>
         
-        {/* 右侧代码展示区域 */}
+        {/* 右侧代码展示区域 - 增加宽度 */}
         <div 
           className="code-container"
           style={{
-            width: '380px',
+            width: '480px',
             flexShrink: 0,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            borderLeft: '1px solid #2d3139'
           }}
         >
           <CodeDisplay
@@ -534,6 +536,9 @@ const PalindromeLinkedListDemo: React.FC = () => {
           />
         </div>
       </div>
+      
+      {/* 微信交流群悬浮球 */}
+      <WechatFloatButton />
     </div>
   );
 };

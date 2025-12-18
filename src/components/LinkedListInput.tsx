@@ -271,78 +271,59 @@ const LinkedListInput: React.FC<LinkedListInputProps> = ({ onListCreated }) => {
   ];
 
   return (
-    <div className="linked-list-input" style={{ margin: '20px 0', position: 'relative' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder={`输入用逗号分隔的数字，最多${maxNodes}个节点`}
-          style={{
-            padding: '8px 12px',
-            borderRadius: '4px',
-            border: error ? '1px solid #e74c3c' : '1px solid #ddd',
-            flex: 1,
-          }}
-        />
-        <button
-          onClick={generateRandomList}
-          title="生成随机链表数据"
-          className="dice-button"
-        >
-          <span className="dice-icon">🎲</span>
-        </button>
-        <button
-          onClick={handleCreateList}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#3498db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          创建链表
-        </button>
-      </div>
+    <div className="linked-list-input" style={{ position: 'relative' }}>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        placeholder={`数字,逗号分隔`}
+        style={{
+          padding: '5px 8px',
+          borderRadius: '4px',
+          border: error ? '1px solid #ef4444' : '1px solid #3d4149',
+          backgroundColor: '#2d3139',
+          color: '#e0e0e0',
+          fontSize: '12px',
+          width: '100px',
+        }}
+      />
+      <button
+        onClick={generateRandomList}
+        title="生成随机链表数据"
+        style={{
+          padding: '5px 8px',
+          backgroundColor: '#f59e0b',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '12px',
+        }}
+      >
+        🎲
+      </button>
+      <button
+        onClick={handleCreateList}
+        style={{
+          padding: '5px 10px',
+          backgroundColor: '#00d4aa',
+          color: '#1a1d23',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '12px',
+          fontWeight: 600,
+        }}
+      >
+        创建
+      </button>
 
       {error && (
-        <div
-          style={{
-            color: '#e74c3c',
-            marginTop: '10px',
-            fontSize: '14px',
-          }}
-        >
-          错误: {error}
-        </div>
+        <span style={{ color: '#ef4444', fontSize: '11px', marginLeft: '4px' }}>
+          {error}
+        </span>
       )}
-
-      <div style={{ marginTop: '15px' }}>
-        <div style={{ fontSize: '14px', color: '#7f8c8d', marginBottom: '8px' }}>
-          示例:
-        </div>
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          {examples.map((example, index) => (
-            <button
-              key={index}
-              onClick={() => setInputValue(example.join(','))}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: '#f1f1f1',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              {example.join(', ')}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Toast notification */}
       {showToast && (

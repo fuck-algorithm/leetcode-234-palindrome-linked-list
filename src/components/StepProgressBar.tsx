@@ -17,30 +17,24 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({
   return (
     <div 
       style={{ 
-        width: '100vw',  // 使用视口宽度单位
+        width: '100%',
         padding: 0,
         margin: 0,
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
       }}
     >
       <div style={{ 
         position: 'relative',
-        height: '18px',
+        height: '4px',
       }}>
         {/* 进度条背景 */}
         <div 
           style={{
             height: '100%',
             width: '100%',
-            backgroundColor: '#ecf0f1',
+            backgroundColor: '#2d3139',
             position: 'absolute',
             left: 0,
             top: 0,
-            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)'
           }}
         >
           {/* 完成进度 */}
@@ -48,11 +42,12 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({
             style={{
               height: '100%',
               width: `${progressPercent}%`,
-              background: 'linear-gradient(to right, #3498db, #2980b9)',
+              background: 'linear-gradient(to right, #00d4aa, #00f5c4)',
               transition: 'width 0.3s ease-in-out',
               position: 'absolute',
               left: 0,
-              top: 0
+              top: 0,
+              boxShadow: '0 0 8px rgba(0, 212, 170, 0.5)'
             }}
           />
         </div>
@@ -61,19 +56,17 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({
         <div 
           style={{
             position: 'absolute',
-            left: '50%',
+            right: '8px',
             top: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: 'white',
-            padding: '1px 12px',
-            borderRadius: '15px',
-            fontSize: '1rem',
+            transform: 'translateY(-50%)',
+            backgroundColor: '#1a1d23',
+            color: '#00d4aa',
+            padding: '2px 8px',
+            borderRadius: '4px',
+            fontSize: '11px',
             fontWeight: 'bold',
             zIndex: 10,
-            minWidth: '80px',
-            textAlign: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+            border: '1px solid #00d4aa'
           }}
         >
           {currentStep + 1}/{totalSteps}

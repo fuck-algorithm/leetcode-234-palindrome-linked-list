@@ -1,35 +1,35 @@
 import { NodeStatus } from '../../utils/palindromeChecker';
 
 /**
- * 定义指针和节点状态的颜色
+ * 定义指针和节点状态的颜色 - 更生动的配色
  */
 export const STATUS_COLORS = {
-  [NodeStatus.NORMAL]: '#2c3e50',
-  [NodeStatus.SLOW_POINTER]: '#3498db',
-  [NodeStatus.FAST_POINTER]: '#9b59b6',
-  [NodeStatus.PREV_POINTER]: '#e67e22',
-  [NodeStatus.CURRENT_POINTER]: '#f1c40f',
-  [NodeStatus.NEXT_POINTER]: '#1abc9c',
-  [NodeStatus.FIRST_HALF]: '#27ae60',
-  [NodeStatus.SECOND_HALF]: '#e74c3c',
-  [NodeStatus.COMPARED]: '#2ecc71',
-  [NodeStatus.MISMATCH]: '#c0392b'
+  [NodeStatus.NORMAL]: '#4a5568',
+  [NodeStatus.SLOW_POINTER]: '#00d4aa',
+  [NodeStatus.FAST_POINTER]: '#ff6b6b',
+  [NodeStatus.PREV_POINTER]: '#ffa726',
+  [NodeStatus.CURRENT_POINTER]: '#ffeb3b',
+  [NodeStatus.NEXT_POINTER]: '#26c6da',
+  [NodeStatus.FIRST_HALF]: '#66bb6a',
+  [NodeStatus.SECOND_HALF]: '#ef5350',
+  [NodeStatus.COMPARED]: '#4caf50',
+  [NodeStatus.MISMATCH]: '#f44336'
 };
 
 /**
- * 定义数据部分的背景渐变色
+ * 定义数据部分的背景渐变色 - 深色主题
  */
 export const STATUS_BACKGROUNDS = {
-  [NodeStatus.NORMAL]: '#e8f8f5',
-  [NodeStatus.SLOW_POINTER]: '#d6eaf8',
-  [NodeStatus.FAST_POINTER]: '#ebdef0',
-  [NodeStatus.PREV_POINTER]: '#fdebd0',
-  [NodeStatus.CURRENT_POINTER]: '#fef9e7',
-  [NodeStatus.NEXT_POINTER]: '#e8f8f5',
-  [NodeStatus.FIRST_HALF]: '#eafaf1',
-  [NodeStatus.SECOND_HALF]: '#fadbd8',
-  [NodeStatus.COMPARED]: '#eafaf1',
-  [NodeStatus.MISMATCH]: '#f9ebea'
+  [NodeStatus.NORMAL]: '#2d3748',
+  [NodeStatus.SLOW_POINTER]: '#1a3a3a',
+  [NodeStatus.FAST_POINTER]: '#3a2a2a',
+  [NodeStatus.PREV_POINTER]: '#3a3020',
+  [NodeStatus.CURRENT_POINTER]: '#3a3820',
+  [NodeStatus.NEXT_POINTER]: '#203038',
+  [NodeStatus.FIRST_HALF]: '#203a20',
+  [NodeStatus.SECOND_HALF]: '#3a2020',
+  [NodeStatus.COMPARED]: '#203a20',
+  [NodeStatus.MISMATCH]: '#3a2020'
 };
 
 /**

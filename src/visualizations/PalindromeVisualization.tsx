@@ -22,32 +22,32 @@ interface PalindromeVisualizationProps<T> {
   height: number;
 }
 
-// 定义指针和节点状态的颜色
+// 定义指针和节点状态的颜色 - 更生动的配色
 const STATUS_COLORS = {
-  [NodeStatus.NORMAL]: '#2c3e50',
-  [NodeStatus.SLOW_POINTER]: '#3498db',
-  [NodeStatus.FAST_POINTER]: '#9b59b6',
-  [NodeStatus.PREV_POINTER]: '#e67e22',
-  [NodeStatus.CURRENT_POINTER]: '#f1c40f',
-  [NodeStatus.NEXT_POINTER]: '#1abc9c',
-  [NodeStatus.FIRST_HALF]: '#27ae60',
-  [NodeStatus.SECOND_HALF]: '#e74c3c',
-  [NodeStatus.COMPARED]: '#2ecc71',
-  [NodeStatus.MISMATCH]: '#c0392b'
+  [NodeStatus.NORMAL]: '#4a5568',
+  [NodeStatus.SLOW_POINTER]: '#00d4aa',
+  [NodeStatus.FAST_POINTER]: '#ff6b6b',
+  [NodeStatus.PREV_POINTER]: '#ffa726',
+  [NodeStatus.CURRENT_POINTER]: '#ffeb3b',
+  [NodeStatus.NEXT_POINTER]: '#26c6da',
+  [NodeStatus.FIRST_HALF]: '#66bb6a',
+  [NodeStatus.SECOND_HALF]: '#ef5350',
+  [NodeStatus.COMPARED]: '#4caf50',
+  [NodeStatus.MISMATCH]: '#f44336'
 };
 
-// 定义数据部分的背景渐变色
+// 定义数据部分的背景渐变色 - 深色主题
 const STATUS_BACKGROUNDS = {
-  [NodeStatus.NORMAL]: '#e8f8f5',
-  [NodeStatus.SLOW_POINTER]: '#d6eaf8',
-  [NodeStatus.FAST_POINTER]: '#ebdef0',
-  [NodeStatus.PREV_POINTER]: '#fdebd0',
-  [NodeStatus.CURRENT_POINTER]: '#fef9e7',
-  [NodeStatus.NEXT_POINTER]: '#e8f8f5',
-  [NodeStatus.FIRST_HALF]: '#eafaf1',
-  [NodeStatus.SECOND_HALF]: '#fadbd8',
-  [NodeStatus.COMPARED]: '#eafaf1',
-  [NodeStatus.MISMATCH]: '#f9ebea'
+  [NodeStatus.NORMAL]: '#2d3748',
+  [NodeStatus.SLOW_POINTER]: '#1a3a3a',
+  [NodeStatus.FAST_POINTER]: '#3a2a2a',
+  [NodeStatus.PREV_POINTER]: '#3a3020',
+  [NodeStatus.CURRENT_POINTER]: '#3a3820',
+  [NodeStatus.NEXT_POINTER]: '#203038',
+  [NodeStatus.FIRST_HALF]: '#203a20',
+  [NodeStatus.SECOND_HALF]: '#3a2020',
+  [NodeStatus.COMPARED]: '#203a20',
+  [NodeStatus.MISMATCH]: '#3a2020'
 };
 
 // 状态标签
@@ -116,21 +116,21 @@ const NodeComponent = ({
   pointerWidth: number;
   pointerHeight: number;
 }) => {
-  // 确定节点值部分的颜色
+  // 确定节点值部分的颜色 - 更生动的配色
   const valueFill = (() => {
     if (isFocus) {
-      return '#f39c12';
+      return '#ffa726';
     }
     
-    if (status.includes(NodeStatus.COMPARED)) return '#9b59b6';
-    if (status.includes(NodeStatus.CURRENT_POINTER)) return '#3498db';
-    if (status.includes(NodeStatus.SLOW_POINTER)) return '#16a085';
-    if (status.includes(NodeStatus.FAST_POINTER)) return '#e74c3c';
-    return '#bdc3c7';
+    if (status.includes(NodeStatus.COMPARED)) return '#4caf50';
+    if (status.includes(NodeStatus.CURRENT_POINTER)) return '#00d4aa';
+    if (status.includes(NodeStatus.SLOW_POINTER)) return '#00d4aa';
+    if (status.includes(NodeStatus.FAST_POINTER)) return '#ff6b6b';
+    return '#5a6a7a';
   })();
   
-  // 确定指针部分的颜色
-  const pointerFill = '#f8f9fa';
+  // 确定指针部分的颜色 - 深色主题
+  const pointerFill = '#2d3748';
   
   // 值部分的中心位置在传入的x坐标
   const valueX = x;
@@ -147,7 +147,7 @@ const NodeComponent = ({
         cy={y}
         r={nodeRadius}
         fill={valueFill}
-        stroke="#34495e"
+        stroke="#00d4aa"
         strokeWidth={2}
       />
       
@@ -161,7 +161,7 @@ const NodeComponent = ({
         fill="#ffffff"
         fontWeight="bold"
         style={{
-          textShadow: '0px 1px 2px rgba(0,0,0,0.3)'
+          textShadow: '0px 1px 2px rgba(0,0,0,0.5)'
         }}
       >
         {String(value)}
@@ -173,7 +173,7 @@ const NodeComponent = ({
         y1={y}
         x2={pointerX}
         y2={y}
-        stroke="#34495e"
+        stroke="#4a5568"
         strokeWidth={2}
       />
       
@@ -183,9 +183,9 @@ const NodeComponent = ({
         y={pointerY}
         width={pointerWidth}
         height={pointerHeight}
-        fill={pointerFill}
-        stroke="#34495e"
-        strokeWidth={2}
+        fill="#1a2332"
+        stroke="#00d4aa"
+        strokeWidth={1.5}
         rx={3}
         ry={3}
       />
@@ -197,7 +197,7 @@ const NodeComponent = ({
         textAnchor="middle"
         dominantBaseline="middle"
         fontSize={Math.max(14, nodeRadius * 0.7) + "px"}
-        fill="#34495e"
+        fill="#00d4aa"
         fontWeight="bold"
       >
         next
@@ -209,7 +209,7 @@ const NodeComponent = ({
         y={y + nodeRadius + 15}
         textAnchor="middle"
         fontSize={Math.max(14, nodeRadius * 0.7) + "px"}
-        fill="#555"
+        fill="#a0aec0"
         fontWeight="bold"
       >
         #{index + 1}
@@ -239,7 +239,7 @@ const LinkComponent = ({
       <g className="null-link">
         <path
           d={`M${sourceX},${sourceY} h30`}
-          stroke="#95a5a6"
+          stroke="#718096"
           strokeWidth={2}
           fill="none"
           markerEnd="url(#arrow-null)"
@@ -249,7 +249,7 @@ const LinkComponent = ({
           y={sourceY + 4}
           textAnchor="middle"
           fontSize="12px"
-          fill="#95a5a6"
+          fill="#718096"
         >
           null
         </text>
@@ -271,7 +271,7 @@ const LinkComponent = ({
       <g className="reverse-link">
         <path
           d={path}
-          stroke="#e67e22"
+          stroke="#f59e0b"
           strokeWidth={2}
           fill="none"
           markerEnd="url(#arrow)"
@@ -282,7 +282,7 @@ const LinkComponent = ({
           y={midY}
           textAnchor="middle"
           fontSize="10px"
-          fill="#e67e22"
+          fill="#f59e0b"
         >
           反向连接
         </text>
@@ -308,7 +308,7 @@ const LinkComponent = ({
     <g className="forward-link">
       <path
         d={path}
-        stroke="#34495e"
+        stroke="#00d4aa"
         strokeWidth={2}
         fill="none"
         markerEnd="url(#arrow)"
@@ -755,6 +755,7 @@ const LegendComponent = ({
         y={-15}
         fontSize="13px"
         fontWeight="bold"
+        fill="#a0aec0"
       >
         节点结构:
       </text>
@@ -764,8 +765,8 @@ const LegendComponent = ({
         cx={valueX}
         cy={valueY}
         r={layoutParams.NODE_RADIUS * 0.7} // 适当大小的图例节点
-        fill="#fff"
-        stroke="#2c3e50"
+        fill="#4a5568"
+        stroke="#00d4aa"
         strokeWidth={1.5}
       />
       
@@ -775,7 +776,7 @@ const LegendComponent = ({
         y1={valueY}
         x2={pointerX}
         y2={valueY}
-        stroke="#2c3e50"
+        stroke="#4a5568"
         strokeWidth={1.5}
       />
       
@@ -785,8 +786,8 @@ const LegendComponent = ({
         y={pointerY}
         width={layoutParams.POINTER_WIDTH * 0.7}
         height={layoutParams.POINTER_HEIGHT * 0.7}
-        fill="#f8f9fa"
-        stroke="#2c3e50"
+        fill="#2d3748"
+        stroke="#4a5568"
         strokeWidth={1.5}
         rx={2}
         ry={2}
@@ -799,6 +800,7 @@ const LegendComponent = ({
         dominantBaseline="middle"
         fontSize="11px"
         fontWeight="bold"
+        fill="#e0e0e0"
       >
         值
       </text>
@@ -809,6 +811,7 @@ const LegendComponent = ({
         textAnchor="middle"
         dominantBaseline="middle"
         fontSize="9px"
+        fill="#a0aec0"
       >
         指针
       </text>
@@ -820,7 +823,7 @@ const LegendComponent = ({
           y={0}
           fontSize="11px"
           dominantBaseline="middle"
-          fill="#555"
+          fill="#718096"
         >
           <tspan x="0" dy="0">数据:节点值</tspan>
           <tspan x="0" dy="16">指针:下一节点</tspan>
@@ -1286,12 +1289,10 @@ const PalindromeVisualization = <T extends unknown>({
             maxHeight: '100%',
             display: 'block',
             margin: '0 auto',
-            border: '1px solid #ddd', 
-            borderRadius: '4px', 
-            backgroundColor: '#fff'
+            backgroundColor: 'transparent'
           }}
         >
-          <text x={width/2} y={height/2} textAnchor="middle">加载中...</text>
+          <text x={width/2} y={height/2} textAnchor="middle" fill="#a0aec0">加载中...</text>
         </svg>
       </div>
     );
@@ -1338,6 +1339,7 @@ const PalindromeVisualization = <T extends unknown>({
         
         {currentStepData && (
           <g className="step-content">
+            {/* 简化的进度指示器 */}
             <StepIndicator 
               currentStep={currentStep}
               totalSteps={steps.length}
@@ -1345,121 +1347,20 @@ const PalindromeVisualization = <T extends unknown>({
               width={innerWidth}
             />
             
-            {/* 添加节点数量说明文本 */}
-            <text
-              x={innerWidth / 2}
-              y={25}
-              textAnchor="middle"
-              fontSize="14px"
-              fill="#666"
-            >
-              共 {currentStepData.nodes.length} 个节点，可以滑动查看全部
-            </text>
-            
-            {/* 其他内容 */}
-            <g transform={`translate(0, 60)`}>
-              {/* 标题和描述 - 极简样式 */}
+            {/* 主内容区域 - 减少垂直偏移 */}
+            <g transform={`translate(0, 30)`}>
+              {/* 简化的标题 */}
               <g className="titles">
                 <text
                   className="title"
-                  x={innerWidth / 2}
+                  x={10}
                   y={0}
-                  textAnchor="middle"
-                  fontSize="14px"
+                  fontSize="13px"
                   fontWeight="bold"
+                  fill="#e0e0e0"
                 >
                   {getStepTitle(currentStepData.type)}
                 </text>
-                
-                <text
-                  className="description"
-                  x={innerWidth / 2}
-                  y={20}
-                  textAnchor="middle"
-                  fontSize="12px"
-                  fill="#555"
-                >
-                  {currentStepData.description}
-                </text>
-                
-                {/* 步骤指示器位置调整 */}
-                {currentStepData.type.includes('MIDDLE') && (
-                  <g className="middle-finding-indicator">
-                    <rect
-                      x={5}
-                      y={-20}
-                      width={160}
-                      height={20}
-                      rx={8}
-                      ry={8}
-                      fill="#3498db"
-                      opacity={0.9}
-                      filter="url(#dropShadow)"
-                    />
-                    <text
-                      x={85}
-                      y={-9}
-                      textAnchor="middle"
-                      fontSize="11px"
-                      fontWeight="bold"
-                      fill="white"
-                    >
-                      🔍 正在查找中间节点 🔍
-                    </text>
-                  </g>
-                )}
-                
-                {currentStepData.type.includes('REVERSE') && (
-                  <g className="reverse-indicator">
-                    <rect
-                      x={5}
-                      y={-20}
-                      width={160}
-                      height={20}
-                      rx={8}
-                      ry={8}
-                      fill="#e67e22"
-                      opacity={0.9}
-                      filter="url(#dropShadow)"
-                    />
-                    <text
-                      x={85}
-                      y={-9}
-                      textAnchor="middle"
-                      fontSize="11px"
-                      fontWeight="bold"
-                      fill="white"
-                    >
-                      🔄 正在反转链表后半部分 🔄
-                    </text>
-                  </g>
-                )}
-                
-                {currentStepData.type.includes('COMPARE') && (
-                  <g className="compare-indicator">
-                    <rect
-                      x={5}
-                      y={-20}
-                      width={160}
-                      height={20}
-                      rx={8}
-                      ry={8}
-                      fill="#2ecc71"
-                      opacity={0.9}
-                      filter="url(#dropShadow)"
-                    />
-                    <text
-                      x={85}
-                      y={-9}
-                      textAnchor="middle"
-                      fontSize="11px"
-                      fontWeight="bold"
-                      fill="white"
-                    >
-                      🔍 正在比较前后两部分 🔍
-                    </text>
-                  </g>
-                )}
               </g>
               
               {/* 链接、节点等其他内容 */}
