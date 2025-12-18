@@ -1,0 +1,174 @@
+.code-display {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.code-lang {
+  background-color: #e44d26;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.code-title {
+  color: #9d9d9d;
+  font-size: 12px;
+}
+
+.code-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.code-content pre {
+  margin: 0;
+  padding: 0;
+}
+
+.code-line {
+  display: flex;
+  align-items: flex-start;
+  padding: 1px 12px 1px 0;
+  transition: background-color 0.3s ease;
+  min-height: 20px;
+  position: relative;
+}
+
+.code-line.highlighted {
+  background-color: rgba(255, 255, 0, 0.25);
+  border-left: 3px solid #ffd700;
+  box-shadow: inset 0 0 0 1000px rgba(255, 215, 0, 0.1);
+}
+
+.code-line:not(.highlighted) {
+  border-left: 3px solid transparent;
+}
+
+/* Debug执行指示器 */
+.code-line.highlighted::before {
+  content: '▶';
+  position: absolute;
+  left: 4px;
+  color: #ffd700;
+  font-size: 10px;
+}
+
+.line-number {
+  display: inline-block;
+  width: 40px;
+  text-align: right;
+  padding-right: 12px;
+  color: #6e7681;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.line-content {
+  flex: 1;
+  color: #d4d4d4;
+  white-space: pre;
+}
+
+.variable-values {
+  display: flex;
+  gap: 6px;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+.variable-badge {
+  background-color: rgba(86, 156, 214, 0.2);
+  border: 1px solid #569cd6;
+  color: #9cdcfe;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* 语法高亮颜色 */
+.code-keyword {
+  color: #569cd6;
+}
+
+.code-type {
+  color: #4ec9b0;
+}
+
+.code-string {
+  color: #ce9178;
+}
+
+.code-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+.code-number {
+  color: #b5cea8;
+}
+
+/* 滚动条样式 */
+.code-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.code-content::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.code-content::-webkit-scrollbar-thumb {
+  background: #4d4d4d;
+  border-radius: 4px;
+}
+
+.code-content::-webkit-scrollbar-thumb:hover {
+  background: #5d5d5d;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .code-display {
+    font-size: 12px;
+  }
+  
+  .line-number {
+    width: 32px;
+    padding-right: 8px;
+  }
+  
+  .variable-badge {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .code-display {
+    font-size: 11px;
+  }
+  
+  .variable-values {
+    display: none;
+  }
+}

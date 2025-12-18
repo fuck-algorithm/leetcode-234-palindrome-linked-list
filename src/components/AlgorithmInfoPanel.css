@@ -1,0 +1,322 @@
+.algorithm-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+  font-size: 13px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.info-section {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px;
+  backdrop-filter: blur(10px);
+}
+
+/* 复杂度部分 */
+.complexity-section {
+  text-align: center;
+}
+
+.complexity-badges {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.time-badge {
+  background: rgba(46, 204, 113, 0.3);
+  border: 1px solid rgba(46, 204, 113, 0.5);
+}
+
+.space-badge {
+  background: rgba(52, 152, 219, 0.3);
+  border: 1px solid rgba(52, 152, 219, 0.5);
+}
+
+.complexity-note {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* 阶段进度 */
+.phase-section {
+  padding: 8px;
+}
+
+.phase-title {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.phase-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.phase-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.phase-item.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.phase-item.completed {
+  opacity: 0.8;
+}
+
+.phase-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.phase-name {
+  font-size: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.phase-connector {
+  position: absolute;
+  top: 12px;
+  left: 60%;
+  width: 80%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.phase-item.completed .phase-connector {
+  background: rgba(46, 204, 113, 0.8);
+}
+
+/* 当前操作 */
+.operation-section {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.operation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.operation-icon {
+  font-size: 18px;
+}
+
+.operation-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.operation-detail {
+  font-size: 12px;
+  opacity: 0.9;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+/* 指针状态 */
+.pointers-section {
+  padding: 8px;
+}
+
+.pointers-title {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pointers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.pointer-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.pointer-item.slow {
+  background: rgba(22, 160, 133, 0.4);
+  border-left: 3px solid #16a085;
+}
+
+.pointer-item.fast {
+  background: rgba(192, 57, 43, 0.4);
+  border-left: 3px solid #c0392b;
+}
+
+.pointer-item.prev {
+  background: rgba(230, 126, 34, 0.4);
+  border-left: 3px solid #e67e22;
+}
+
+.pointer-item.curr {
+  background: rgba(241, 196, 15, 0.4);
+  border-left: 3px solid #f1c40f;
+}
+
+.pointer-item.left,
+.pointer-item.front {
+  background: rgba(39, 174, 96, 0.4);
+  border-left: 3px solid #27ae60;
+}
+
+.pointer-item.right,
+.pointer-item.back {
+  background: rgba(155, 89, 182, 0.4);
+  border-left: 3px solid #9b59b6;
+}
+
+.pointer-label {
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.pointer-value {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-weight: 700;
+}
+
+/* 进度条 */
+.progress-section {
+  padding: 8px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.progress-text {
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-percent {
+  text-align: right;
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* 结果预览 */
+.result-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.result-section.success {
+  background: rgba(46, 204, 113, 0.3);
+  border: 1px solid rgba(46, 204, 113, 0.5);
+}
+
+.result-section.failure {
+  background: rgba(231, 76, 60, 0.3);
+  border: 1px solid rgba(231, 76, 60, 0.5);
+}
+
+.result-icon {
+  font-size: 20px;
+}
+
+.result-text {
+  font-size: 14px;
+}
+
+/* 滚动条样式 */
+.algorithm-info-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.algorithm-info-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.algorithm-info-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+/* 响应式调整 */
+@media (max-width: 1400px) {
+  .algorithm-info-panel {
+    font-size: 12px;
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .phase-icon {
+    font-size: 16px;
+  }
+  
+  .phase-name {
+    font-size: 9px;
+  }
+  
+  .pointers-grid {
+    grid-template-columns: 1fr;
+  }
+}

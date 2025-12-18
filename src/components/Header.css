@@ -1,0 +1,102 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.leetcode-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.leetcode-link:hover {
+  color: #ffa116;
+}
+
+.problem-number {
+  color: #ffa116;
+}
+
+.problem-title {
+  color: inherit;
+}
+
+.difficulty {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.difficulty.easy {
+  background-color: rgba(0, 175, 155, 0.1);
+  color: #00af9b;
+}
+
+.difficulty.medium {
+  background-color: rgba(255, 184, 0, 0.1);
+  color: #ffb800;
+}
+
+.difficulty.hard {
+  background-color: rgba(255, 55, 95, 0.1);
+  color: #ff375f;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.github-link:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.github-link svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 6px 12px;
+  }
+  
+  .leetcode-link {
+    font-size: 16px;
+  }
+  
+  .difficulty {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+}

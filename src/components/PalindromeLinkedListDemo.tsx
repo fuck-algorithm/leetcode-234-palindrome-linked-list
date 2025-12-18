@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { LinkedList } from '../models/LinkedList';
 import { 
   isPalindromeUsingTwoPointers, 
@@ -8,9 +8,11 @@ import {
 } from '../utils/palindromeChecker';
 import { STORAGE_KEYS } from '../utils/constants';
 import LinkedListInput from './LinkedListInput';
-import AlgorithmExplanation from './AlgorithmExplanation';
 import PalindromeVisualization from '../visualizations/PalindromeVisualization';
 import StepProgressBar from './StepProgressBar';
+import Header from './Header';
+import CodeDisplay from './CodeDisplay';
+import AlgorithmInfoPanel from './AlgorithmInfoPanel';
 
 // 算法解法类型
 enum AlgorithmType {
@@ -28,6 +30,15 @@ const PalindromeLinkedListDemo: React.FC = () => {
     description: string;
     comparedNodes?: { left: number; right: number }[];
     isEvenLength?: boolean;
+    positions?: {
+      slowIndex?: number;
+      fastIndex?: number;
+      prevIndex?: number;
+      currentIndex?: number;
+      nextIndex?: number;
+      leftIndex?: number;
+      rightIndex?: number;
+    };
   }[]>([]);
   const [isPalindrome, setIsPalindrome] = useState<boolean>(true);
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -175,19 +186,19 @@ const PalindromeLinkedListDemo: React.FC = () => {
     setLinkedList(list);
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentStep < algorithmSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, algorithmSteps.length]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
-  const handleAutoPlay = () => {
+  const handleAutoPlay = useCallback(() => {
     if (isAutoPlaying) {
       setIsAutoPlaying(false);
       if (animationIntervalRef.current) {
@@ -210,7 +221,35 @@ const PalindromeLinkedListDemo: React.FC = () => {
     }, animationSpeed);
     
     animationIntervalRef.current = interval;
-  };
+  }, [isAutoPlaying, algorithmSteps.length, animationSpeed]);
+
+  // 键盘快捷键处理
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 如果焦点在输入框中，不处理快捷键
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          handlePrevious();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          handleNext();
+          break;
+        case ' ':
+          e.preventDefault();
+          handleAutoPlay();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handlePrevious, handleNext, handleAutoPlay]);
 
   const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const speed = parseInt(e.target.value);
@@ -244,43 +283,8 @@ const PalindromeLinkedListDemo: React.FC = () => {
     setShowHints(!showHints);
   };
 
-  // 获取当前执行的算法步骤名
-  const getCurrentStepName = (): string => {
-    if (!algorithmSteps[currentStep]) return '';
-    
-    switch (algorithmSteps[currentStep].type) {
-      case StepType.INITIAL:
-        return '初始化';
-      case StepType.ARRAY_COPY_START:
-      case StepType.ARRAY_COPY_COMPLETE:
-        return '复制到数组';
-      case StepType.ARRAY_COMPARE_START:
-      case StepType.ARRAY_COMPARE_STEP:
-      case StepType.ARRAY_COMPARE_COMPLETE:
-        return '数组比较';
-      case StepType.FIND_MIDDLE_START:
-      case StepType.FIND_MIDDLE_STEP:
-      case StepType.FIND_MIDDLE_COMPLETE:
-        return '查找中间节点';
-      case StepType.REVERSE_START:
-      case StepType.REVERSE_STEP:
-      case StepType.REVERSE_COMPLETE:
-        return '反转后半部分';
-      case StepType.COMPARE_START:
-      case StepType.COMPARE_STEP:
-      case StepType.COMPARE_COMPLETE:
-        return '比较两部分';
-      default:
-        return '';
-    }
-  };
-
-  // 计算可视化区域尺寸
-  const visualizationWidth = Math.max(containerSize.width * 0.95, 600);
-  const visualizationHeight = Math.max(containerSize.height * 0.7, 400);
-
   // 根据步骤生成提示信息
-  const getHintForStep = (step: any): string => {
+  const getHintForStep = (step: { type: StepType }): string => {
     const { type } = step;
     
     switch(type) {
@@ -319,16 +323,29 @@ const PalindromeLinkedListDemo: React.FC = () => {
     }
   };
 
+  // 获取当前步骤的位置信息
+  const getCurrentPositions = () => {
+    if (algorithmSteps.length > 0 && currentStep < algorithmSteps.length) {
+      return algorithmSteps[currentStep].positions;
+    }
+    return undefined;
+  };
+
+  // 计算可视化区域尺寸
+  const visualizationWidth = Math.max(containerSize.width * 0.6, 400);
+  const visualizationHeight = Math.max(containerSize.height * 0.6, 300);
+
   return (
     <div className="palindrome-demo" style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <Header />
+      
       <div className="controls" style={{ padding: '0 10px', flexShrink: 0 }}>
-        <h1 style={{ fontSize: '1.5rem', margin: '10px 0' }}>回文链表检测</h1>
-        
         <div style={{ 
           display: 'flex', 
           flexWrap: 'wrap', 
           gap: '10px', 
           alignItems: 'center',
+          marginTop: '10px',
           marginBottom: '10px'
         }}>
           <LinkedListInput onListCreated={handleListCreated} />
@@ -371,11 +388,17 @@ const PalindromeLinkedListDemo: React.FC = () => {
           marginBottom: '10px'
         }}>
           <div style={{ display: 'flex', gap: '5px' }}>
-            <button onClick={handlePrevious}>上一步</button>
-            <button onClick={handleNext}>下一步</button>
-            <button onClick={handleAutoPlay}>{isAutoPlaying ? '暂停' : '播放'}</button>
-            <button onClick={handleReset}>重置</button>
-            <button onClick={handleSkipToEnd}>跳到结尾</button>
+            <button onClick={handlePrevious} title="快捷键: ←">
+              ← 上一步 (←)
+            </button>
+            <button onClick={handleNext} title="快捷键: →">
+              下一步 (→) →
+            </button>
+            <button onClick={handleAutoPlay} title="快捷键: 空格">
+              {isAutoPlaying ? '⏸ 暂停' : '▶ 播放'} (空格)
+            </button>
+            <button onClick={handleReset}>⟲ 重置</button>
+            <button onClick={handleSkipToEnd}>跳到结尾 ⏭</button>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -444,24 +467,75 @@ const PalindromeLinkedListDemo: React.FC = () => {
         </div>
       )}
       
+      {/* 主内容区域：信息面板 + 可视化 + 代码 */}
       <div 
         ref={containerRef} 
-        className="visualization-container"
+        className="main-content"
         style={{
           flex: 1,
           minHeight: 0,
-          overflow: 'hidden'
+          overflow: 'hidden',
+          display: 'flex',
+          gap: '10px',
+          padding: '0 10px 10px'
         }}
       >
-        <PalindromeVisualization
-          steps={algorithmSteps}
-          currentStep={currentStep}
-          width={containerSize.width}
-          height={containerSize.height}
-        />
+        {/* 左侧信息面板 */}
+        <div 
+          className="info-panel-container"
+          style={{
+            width: '220px',
+            flexShrink: 0,
+            overflow: 'hidden'
+          }}
+        >
+          <AlgorithmInfoPanel
+            stepType={algorithmSteps[currentStep]?.type || StepType.INITIAL}
+            currentStep={currentStep}
+            totalSteps={algorithmSteps.length}
+            isPalindrome={isPalindrome}
+            algorithmType={algorithmType === AlgorithmType.TWO_POINTERS ? 'twoPointers' : 'arrayCopy'}
+            nodeCount={linkedList.length()}
+            positions={getCurrentPositions()}
+            nodeValues={linkedList.toArray()}
+          />
+        </div>
+        
+        {/* 中间可视化区域 */}
+        <div 
+          className="visualization-container"
+          style={{
+            flex: 1,
+            minWidth: 0,
+            overflow: 'hidden'
+          }}
+        >
+          <PalindromeVisualization
+            steps={algorithmSteps}
+            currentStep={currentStep}
+            width={visualizationWidth}
+            height={visualizationHeight}
+          />
+        </div>
+        
+        {/* 右侧代码展示区域 */}
+        <div 
+          className="code-container"
+          style={{
+            width: '380px',
+            flexShrink: 0,
+            overflow: 'hidden'
+          }}
+        >
+          <CodeDisplay
+            stepType={algorithmSteps[currentStep]?.type || StepType.INITIAL}
+            algorithmType={algorithmType === AlgorithmType.TWO_POINTERS ? 'twoPointers' : 'arrayCopy'}
+            positions={getCurrentPositions()}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-export default PalindromeLinkedListDemo; 
+export default PalindromeLinkedListDemo;
